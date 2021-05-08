@@ -1,0 +1,23 @@
+{
+  "name": "upgraded-journey",
+  "version": "1.0.0",
+  "description": "local stack",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "docker compose up",
+    "up": "docker compose up -d",
+    "down": "docker compose down",
+    "clean": "docker compose down -v --remove-orphans",
+    "postclean": "docker volume prune"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanshores/upgraded-journey.git"
+  },
+  "author": "Ryan Shores",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ryanshores/upgraded-journey/issues"
+  },
+  "homepage": "https://github.com/ryanshores/upgraded-journey#readme"
+}

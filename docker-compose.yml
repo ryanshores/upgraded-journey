@@ -1,0 +1,58 @@
+version: "3.7"
+
+services:
+  homeassistant:
+    container_name: homeassistant
+    image: homeassistant/raspberrypi4-homeassistant:stable
+    volumes:
+      - ha-config:/config
+      - localtime:/etc/localtime:ro
+    restart: unless-stopped
+    ports:
+      - 8123:8123
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${PGSQL_ROOT_PASSWORD}
+      PGDATA: ${PGSQL_DATA}
+    ports:
+      - 5432:5432
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    environment:
+      DB_MYSQL_HOST: ${MYSQL_HOST}
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: ${MYSQL_USER}
+      DB_MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      DB_MYSQL_NAME: ${MYSQL_DB}
+    volumes:
+      - nginx:/data
+      - letsencrypt:/etc/letsencrypt
+  mysql:
+    container_name: ${MYSQL_HOST}
+    image: 'jc21/mariadb-aria:latest'
+    volumes: 
+      - mysql:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+  
+volumes:
+  pgdata:
+  ha-config:
+  localtime:
+  nginx:
+  letsencrypt:
+  mysql:
