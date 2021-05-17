@@ -1,29 +1,30 @@
 version: "3.7"
 
 services:
-  homeassistant:
-    container_name: homeassistant
-    image: homeassistant/raspberrypi4-homeassistant:stable
+  redis:
+    image: "redis:alpine"
+  mssql:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+      SA_PASSWORD: ${MSSQL_PASSWORD}
+      ACCEPT_EULA: "Y"
     volumes:
-      - ha-config:/config
-      - localtime:/etc/localtime:ro
-    restart: unless-stopped
-    ports:
-      - 8123:8123
+      - mssql:/var/opt/mssql/data
   postgres:
     image: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: ${PGSQL_ROOT_PASSWORD}
-      PGDATA: ${PGSQL_DATA}
     ports:
       - 5432:5432
+    volumes: 
+      - pgsql:/var/lib/postgresql/data
   nginx:
     image: 'jc21/nginx-proxy-manager:latest'
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - '8080:80'
+      - '8081:81'
+      - '4443:443'
     environment:
       DB_MYSQL_HOST: ${MYSQL_HOST}
       DB_MYSQL_PORT: 3306
@@ -47,12 +48,13 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 8082:8080
   
 volumes:
-  pgdata:
+  pgsql:
   ha-config:
   localtime:
   nginx:
   letsencrypt:
   mysql:
+  mssql:
